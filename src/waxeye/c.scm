@@ -197,6 +197,7 @@ struct parser_t* ~a_new() {
       (case (fa-mode a)
         ((voidArrow) "VOID")
         ((pruneArrow) "PRUNE")
+        ((skipArrow) "SKIP")
         ((leftArrow) "LEFT"))))))
 
 

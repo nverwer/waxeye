@@ -82,6 +82,7 @@ mzscheme
           (case (fa-mode a)
             ((voidArrow) "void")
             ((pruneArrow) "prune")
+            ((skipArrow) "skip")
             ((leftArrow) "left"))))
 
 

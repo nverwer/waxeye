@@ -184,6 +184,7 @@ import org.waxeye.parser.WildCardTransition;
                     (case (fa-mode a)
                       ((voidArrow) "FA.VOID")
                       ((pruneArrow) "FA.PRUNE")
+                      ((skipArrow) "FA.SKIP")
                       ((leftArrow) "FA.LEFT")))
           ))
           (ind)))

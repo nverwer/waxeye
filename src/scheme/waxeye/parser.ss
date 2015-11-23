@@ -65,6 +65,8 @@ mzscheme
                                       (car res))
                                      (else
                                       (make-ast type res (cons start-pos input-pos)))))
+                                   ((skipArrow)
+                                    res)
                                    ((leftArrow)
                                     (make-ast type res (cons start-pos input-pos)))
                                    (else (error 'waxeye "Unknown automaton mode")))

@@ -3,7 +3,7 @@
 Grammar     <- Ws *Definition
 
 
-Definition  <- Identifier (LeftArrow | PruneArrow | VoidArrow) Alternation Ws
+Definition  <- Identifier (LeftArrow | PruneArrow | SkipArrow | VoidArrow) Alternation Ws
 
 
 Alternation <- Sequence *(Alt Sequence)
@@ -13,7 +13,7 @@ Sequence    <- +Unit
 
 
 Unit        <- *(Prefix | Label)
-               ( Identifier !(LeftArrow | PruneArrow | VoidArrow)
+               ( Identifier !(LeftArrow | PruneArrow | SkipArrow | VoidArrow)
                | Open Alternation Close
                | Action
                | Literal
@@ -62,6 +62,9 @@ LeftArrow   <- :'<-' Ws
 
 
 PruneArrow  <- :'<=' Ws
+
+
+SkipArrow  <- :'<<' Ws
 
 
 VoidArrow   <- :'<:' Ws
