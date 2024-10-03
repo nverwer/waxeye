@@ -10,3 +10,11 @@ docs/site/genfiles/
 docs/site/manual.html
 docs/manual.pdf
 node_modules/
+
+.settings/
+
+.classpath
+
+.project
+
+waxeye.exe

@@ -95,7 +95,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
     }
 
     /** {@inheritDoc} */
-    @Deprecated public final ParseResult<E> parse(final IParserInput input)
+    public final ParseResult<E> parse(final IParserInput input)
     {
         return new InnerParser(input).parse();
     }
