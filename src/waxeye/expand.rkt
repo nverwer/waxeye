@@ -32,6 +32,7 @@
     (let ((type (ast-t exp)))
       (case type
        ((action) (void))
+       ((preParsedNonTerminal) (void))
        ((alternation) (visit-alternation exp))
        ((and) (visit-only-child exp))
        ((caseLiteral) (visit-case-literal exp))

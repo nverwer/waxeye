@@ -14,18 +14,23 @@ Sequence    <- +Unit
 
 Unit        <- *(Prefix | Label)
                ( Identifier !(LeftArrow | PruneArrow | VoidArrow)
+               | PreParsedNonTerminal
                | Open Alternation Close
                | Action
                | Literal
                | CaseLiteral
                | CharClass
-               | WildCard )
+               | WildCard
+               )
 
 
 Prefix      <- [?*+:&!] Ws
 
 
 Label       <- Identifier Ws :'=' Ws
+
+
+PreParsedNonTerminal <- :'<' Identifier :'>' Ws
 
 
 Action      <- :'@' Identifier ?(:'<' Ws Identifier *(Comma Identifier) :'>') Ws

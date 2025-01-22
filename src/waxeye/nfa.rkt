@@ -6,7 +6,8 @@
 #lang racket/base
 (require (only-in racket/list append-map)
          waxeye/ast
-         waxeye/fa)
+         waxeye/fa
+         "debug.rkt")
 (provide make-nfa reset-nfa-builder unwinds)
 
 (define is-void #f)
@@ -64,6 +65,7 @@
   (let ((type (ast-t exp)))
     ((case type
       ((action) build-action)
+      ((preParsedNonTerminal) build-pre-parsed-non-terminal)
       ((alternation) build-alternation)
       ((and) build-and)
       ((charClass) build-char-class)
@@ -83,6 +85,14 @@
 
 (define (build-action exp end)
   (error 'build-action "actions not done yet"))
+
+
+; (struct pre-parsed-non-terminal (name index))
+(define (build-pre-parsed-non-terminal exp end)
+; (error "build-pre-parsed-non-terminal" (edge (list->string (ast-c (car (ast-c exp)))) end is-void) ) )
+; (debug (displayln (string-append "PPNT:" (list->string (ast-c (car (ast-c exp)))) )) (newline))
+  (state (list (edge (list->string (ast-c (car (ast-c exp)))) end is-void)) #f) )
+; (state (list (edge (pre-parsed-non-terminal (list->string (ast-c (car (ast-c exp)))) ...) end is-void)) #f))
 
 
 (define (build-alternation exp end)

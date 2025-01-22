@@ -207,6 +207,7 @@ import org.waxeye.parser.WildCardTransition;
 (define (gen-trans t)
   (cond
    ((equal? t 'wild) (gen-wild-card-trans))
+   ((equal? t 'pre-parsed-non-terminal) (gen-pre-parsed-non-terminal-trans))
    ((integer? t) (gen-automaton-trans t))
    ((char? t) (gen-char-trans t))
    ((pair? t) (gen-char-class-trans t))))
@@ -255,3 +256,7 @@ import org.waxeye.parser.WildCardTransition;
 
 (define (gen-wild-card-trans)
   (format "WildCardTransition<~a>()" *java-node-name*))
+
+
+(define (gen-pre-parsed-non-terminal-trans)
+  (format "PreParsedNonTerminalTransition<~a>(~a, ~a)" *java-node-name* "NT" 0))
