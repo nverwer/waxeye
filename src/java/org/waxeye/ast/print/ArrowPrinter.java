@@ -9,6 +9,7 @@ package org.waxeye.ast.print;
 import org.waxeye.ast.IAST;
 import org.waxeye.ast.IChar;
 import org.waxeye.ast.IEmpty;
+import org.waxeye.ast.IPreParsedNonTerminal;
 import org.waxeye.ast.IASTVisitor;
 
 /**
@@ -37,6 +38,7 @@ public final class ArrowPrinter implements IASTVisitor
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitAST(final IAST<?> tree)
     {
         for (int i = 1; i < indentLevel; i++)
@@ -63,11 +65,13 @@ public final class ArrowPrinter implements IASTVisitor
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitEmpty(final IEmpty tree)
     {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitChar(final IChar tree)
     {
         for (int i = 1; i < indentLevel; i++)
@@ -84,6 +88,25 @@ public final class ArrowPrinter implements IASTVisitor
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void visitPreParsedNonTerminal(final IPreParsedNonTerminal tree)
+    {
+        for (int i = 1; i < indentLevel; i++)
+        {
+            buf.append("    ");
+        }
+
+        if (indentLevel > 0)
+        {
+            buf.append("|   <");
+        }
+
+        buf.append(tree.getName());
+        buf.append(">");
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toString()
     {
         return buf.toString();

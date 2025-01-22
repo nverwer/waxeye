@@ -80,7 +80,7 @@ Building from Source
    * Unix and OSX
 
      ```bash
-     make compiler
+     make compiler runtimes
      ```
 
    * Windows
@@ -90,6 +90,8 @@ Building from Source
 
      - Run the `build\exe.bat` script. The `waxeye.exe` executable
        will be saved to the directory you run the script from.
+    
+    - Run `ant -f build/ant.xml jar` to build the Java runtime.
 
 Running tests
 -------------

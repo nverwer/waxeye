@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.BiFunction;
+
 import org.waxeye.ast.AST;
 import org.waxeye.ast.Char;
 import org.waxeye.ast.Empty;
 import org.waxeye.ast.IAST;
 import org.waxeye.ast.Position;
+import org.waxeye.ast.PreParsedNonTerminal;
 import org.waxeye.input.InputBuffer;
 import org.waxeye.input.IParserInput;
 
@@ -33,6 +36,9 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
     /** The char type. */
     private final E charType;
 
+    /** The pre-parsed non-terminal type. */
+    private final E preParsedNonTerminalType;
+
     /** The pos type. */
     private final E posType;
 
@@ -48,53 +54,69 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
     /** The starting automaton. */
     private final int start;
 
+    /** The function that tests for pre-parsed non-terminals.
+     * Function to decide if a non-terminal is present at an input position.
+     * The first parameter is the name of a pre-parsed non-terminal, as specified by the grammar.
+     * The second parameter is the current position in the input.
+     * The function returns the number of character positions within the pre-parsed non-terminal,
+     * or -1 if there is no pre-parsed non-terminal with the given name at the given position.
+     */
+    private BiFunction<String, Integer, Integer> preparsedNonTerminalAt;
+
     /**
      * Creates a new Parser.
      *
      * @param automata The automata of the parser.
-     *
      * @param eofCheck Whether to check that all input gets parsed.
-     *
      * @param start The starting automaton.
-     *
      * @param emptyType The empty type.
-     *
      * @param charType The char type.
-     *
+     * @param preParsedNonTerminalType The pre-parsed non-terminal type.
      * @param posType The positive check type.
-     *
      * @param negType The negative check type.
      */
-    public Parser(final List<FA<E>> automata,  final boolean eofCheck,
+    public Parser(final List<FA<E>> automata, final boolean eofCheck,
         final int start,
-        final E emptyType, final E charType, final E posType, final E negType)
+        final E emptyType, final E charType, final E preParsedNonTerminalType, final E posType, final E negType)
     {
         this.automata = automata;
         this.eofCheck = eofCheck;
         this.start = start;
         this.empty = new Empty<E>(emptyType);
         this.charType = charType;
+        this.preParsedNonTerminalType = preParsedNonTerminalType;
         this.posType = posType;
         this.negType = negType;
+        this.preparsedNonTerminalAt = null;
     }
-    
+
+    /** Returns whether the parser checks that all input is consumed. */
     public void setEofCheck(boolean eofCheck) {
       this.eofCheck = eofCheck;
     }
 
+    /** Set the function that tests for pre-parsed non-terminals. */
+    public void setPreparsedNonTerminalAt(BiFunction<String, Integer, Integer> preparsedNonTerminalAt)
+    {
+      this.preparsedNonTerminalAt = preparsedNonTerminalAt;
+    }
+
     /** {@inheritDoc} */
+    @Override
     public final ParseResult<E> parse(final char[] input)
     {
         return new InnerParser(input).parse();
     }
 
     /** {@inheritDoc} */
+    @Override
     public final ParseResult<E> parse(final String input)
     {
         return new InnerParser(input.toCharArray()).parse();
     }
 
     /** {@inheritDoc} */
+    @Override
     public final ParseResult<E> parse(final IParserInput input)
     {
         return new InnerParser(input).parse();
@@ -483,12 +505,14 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         }
 
         /** {@inheritDoc} */
+        @Override
         public IAST<E> visitAutomatonTransition(final AutomatonTransition<E> t)
         {
             return matchAutomaton(t.getIndex());
         }
 
         /** {@inheritDoc} */
+        @Override
         public IAST<E> visitCharTransition(final CharTransition<E> t)
         {
             if (input.peek() != IParserInput.EOF)
@@ -508,6 +532,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         }
 
         /** {@inheritDoc} */
+        @Override
         public IAST<E> visitWildCardTransition(final WildCardTransition<E> t)
         {
             if (input.peek() == IParserInput.EOF)
@@ -519,6 +544,23 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
             final char c = (char) input.consume();
             updateLineCol(c);
             return new Char<E>(c, charType, input.getPosition());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public IAST<E> visitPreParsedNonTerminalTransition(PreParsedNonTerminalTransition<E> t)
+        {
+          int startPos = input.getPosition();
+          int skipChars = (preparsedNonTerminalAt == null) ? -1 : preparsedNonTerminalAt.apply(t.getName(), startPos);
+          if (skipChars >= 0) {
+            int endPos = startPos + skipChars;
+            // Skip past the characters that have been recognized earlier, as a pre-parsed non-terminal.
+            input.setPosition(endPos);
+            // Return an instance of the pre-parsed non-terminal.
+            return new PreParsedNonTerminal<E>(preParsedNonTerminalType, t.getName(), new Position(startPos, endPos));
+          } else {
+            return null;
+          }
         }
     }
 }

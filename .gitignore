@@ -2,6 +2,7 @@ docs/javadoc/
 lib/
 src/c/libwaxeye.a
 src/c/tests-build/
+src/waxeye/compiled/
 tmp/
 bin/waxeye
 dist/
@@ -18,3 +19,9 @@ node_modules/
 .project
 
 waxeye.exe
+
+.vscode/
+
+waxeye.code-workspace
+
+src/java/build/

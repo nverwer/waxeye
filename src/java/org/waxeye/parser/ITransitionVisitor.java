@@ -43,4 +43,12 @@ public interface ITransitionVisitor <E extends Enum<?>>
      * @return The result of the visit.
      */
     IAST<E> visitWildCardTransition(WildCardTransition<E> t);
+
+    /**
+     * Visits the pre-parsed non-terminal transition.
+     * @param preParsedNonTerminalTransition
+     *
+     * @return The result of the visit.
+     */
+    IAST<E> visitPreParsedNonTerminalTransition(PreParsedNonTerminalTransition<E> t);
 }

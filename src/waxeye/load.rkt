@@ -104,6 +104,7 @@
       (let ((type (ast-t exp)))
         (case type
           ((action) exp)
+          ((preParsedNonTerminal) exp)
           ((alternation) (visit-alternation exp))
           ((caseLiteral) exp)
           ((charClass) exp)

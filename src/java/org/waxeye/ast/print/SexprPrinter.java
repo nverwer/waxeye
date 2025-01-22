@@ -9,6 +9,7 @@ package org.waxeye.ast.print;
 import org.waxeye.ast.IAST;
 import org.waxeye.ast.IChar;
 import org.waxeye.ast.IEmpty;
+import org.waxeye.ast.IPreParsedNonTerminal;
 import org.waxeye.ast.IASTVisitor;
 
 /**
@@ -33,6 +34,7 @@ public final class SexprPrinter implements IASTVisitor
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitAST(final IAST<?> tree)
     {
         buf.append('(');
@@ -48,17 +50,29 @@ public final class SexprPrinter implements IASTVisitor
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitEmpty(final IEmpty tree)
     {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitChar(final IChar tree)
     {
         buf.append(tree.getValue());
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void visitPreParsedNonTerminal(final IPreParsedNonTerminal tree)
+    {
+         buf.append("(pre-parsed-non-terminal ");
+         buf.append(tree.getName());
+         buf.append(')');
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toString()
     {
         return buf.toString();

@@ -6,7 +6,7 @@
 #lang racket/base
 (require waxeye/ast
          waxeye/fa
-         "code.rkt" "dfa.rkt" "gen.rkt")
+         "code.rkt" "nfa.rkt" "dfa.rkt" "gen.rkt")
 (provide gen-java)
 
 
@@ -58,6 +58,7 @@
             (indent (string-append
                      (ind) "_Empty,\n"
                      (ind) "_Char,\n"
+                     (ind) "_PreParsedNonTerminal,\n"
                      (ind) "_Pos,\n"
                      (ind) "_Neg"
                      (apply string-append (map (lambda (a)
@@ -95,6 +96,7 @@ import org.waxeye.parser.Edge;
 import org.waxeye.parser.FA;
 import org.waxeye.parser.State;
 import org.waxeye.parser.WildCardTransition;
+import org.waxeye.parser.PreParsedNonTerminalTransition;
 
 ")
 
@@ -106,9 +108,10 @@ import org.waxeye.parser.WildCardTransition;
           *java-parser-name*
           (ind)
           (indent
-           (format "~asuper(makeAutomata(), true, ~a, ~a._Empty, ~a._Char, ~a._Pos, ~a._Neg);\n"
+           (format "~asuper(makeAutomata(), true, ~a, ~a._Empty, ~a._Char, ~a._PreParsedNonTerminal, ~a._Pos, ~a._Neg);\n"
                    (ind)
                    *start-index*
+                   *java-node-name*
                    *java-node-name*
                    *java-node-name*
                    *java-node-name*
@@ -207,6 +210,7 @@ import org.waxeye.parser.WildCardTransition;
 (define (gen-trans t)
   (cond
    ((equal? t 'wild) (gen-wild-card-trans))
+   ((preparsednonterminal? t) (gen-pre-parsed-non-terminal-trans t))
    ((integer? t) (gen-automaton-trans t))
    ((char? t) (gen-char-trans t))
    ((pair? t) (gen-char-class-trans t))))
@@ -255,3 +259,7 @@ import org.waxeye.parser.WildCardTransition;
 
 (define (gen-wild-card-trans)
   (format "WildCardTransition<~a>()" *java-node-name*))
+
+
+(define (gen-pre-parsed-non-terminal-trans t)
+  (format "PreParsedNonTerminalTransition<~a>(\"~a\")" *java-node-name* (preparsednonterminal-name t)))

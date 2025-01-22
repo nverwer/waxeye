@@ -6,8 +6,10 @@
 #lang racket/base
 (require (only-in racket/list append-map)
          waxeye/ast
-         waxeye/fa)
+         waxeye/fa
+         "debug.rkt")
 (provide make-nfa reset-nfa-builder unwinds)
+(provide (struct-out preparsednonterminal))
 
 (define is-void #f)
 (define unwinds '())
@@ -64,6 +66,7 @@
   (let ((type (ast-t exp)))
     ((case type
       ((action) build-action)
+      ((preParsedNonTerminal) build-pre-parsed-non-terminal)
       ((alternation) build-alternation)
       ((and) build-and)
       ((charClass) build-char-class)
@@ -77,12 +80,26 @@
       ((sequence) build-sequence)
       ((void) build-void)
       ((wildCard) build-wildCard)
-      (else (error 'build-states "unknown expression type: ~s" type)))
+      (else (error 'build-states "unknown expression type '~s' in expression: ~s" type (ast->string exp))))
      exp end)))
 
 
 (define (build-action exp end)
   (error 'build-action "actions not done yet"))
+
+
+;; name - the name of a pre-parsed non-terminal
+(struct preparsednonterminal (name) #:mutable)
+
+(define (build-pre-parsed-non-terminal exp end)
+; exp is an AST of the form `preParsedNonTerminal -> identifier -> 'ppnt-name'`
+; end is the state to which this non-terminal will point
+  (let ( [ppnt-name (list->string (ast-c (car (ast-c exp))))]
+         [ppnt-position (ast-pos exp)])
+    ;(displayln (string-append (symbol->string (ast-t exp)) " / " ppnt-name " @ " (format "~a" ppnt-position) )) (newline)
+    (state (list (edge (preparsednonterminal ppnt-name) end is-void)) #f)
+  )
+)
 
 
 (define (build-alternation exp end)

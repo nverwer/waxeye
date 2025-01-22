@@ -77,7 +77,8 @@
 
 
 (define (get-non-term def)
-  (list->string (ast-c (car (ast-c def)))))
+  (list->string (ast-c (car (ast-c def))))
+)
 
 
 (define (get-defs grammar)

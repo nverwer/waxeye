@@ -36,8 +36,7 @@ public final class AST <E extends Enum<?>> implements IAST<E>
      *
      * @param position The position of the AST.
      */
-    public AST(final E type, final List<IAST<E>> children,
-               final Position position)
+    public AST(final E type, final List<IAST<E>> children, final Position position)
     {
         this.type = type;
         this.children = children;
@@ -60,6 +59,7 @@ public final class AST <E extends Enum<?>> implements IAST<E>
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(final Object object)
     {
         if (this == object)
@@ -81,6 +81,7 @@ public final class AST <E extends Enum<?>> implements IAST<E>
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode()
     {
         final int start = 17;
@@ -96,30 +97,35 @@ public final class AST <E extends Enum<?>> implements IAST<E>
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<IAST<E>> getChildren()
     {
         return children;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Position getPosition()
     {
         return position;
     }
 
     /** {@inheritDoc} */
+    @Override
     public E getType()
     {
         return type;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void acceptASTVisitor(final IASTVisitor visitor)
     {
         visitor.visitAST(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String childrenAsString()
     {
         final StringBuilder buf = new StringBuilder();
@@ -133,6 +139,7 @@ public final class AST <E extends Enum<?>> implements IAST<E>
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString()
     {
         return new ArrowPrinter(this).toString();

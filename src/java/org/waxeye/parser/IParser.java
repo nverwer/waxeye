@@ -42,7 +42,7 @@ public interface IParser <E extends Enum<?>>
      *
      * @return A ParseResult with either an AST or an error.
      *
-     * This method is deprecated in the 'official' waxeye, but we need it for setting positions in th einput.
+     * This method is deprecated in the 'official' waxeye, but we need it for setting positions in the input.
      */
-    @Deprecated ParseResult<E> parse(IParserInput input);
+    ParseResult<E> parse(IParserInput input);
 }

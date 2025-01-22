@@ -16,26 +16,26 @@
   (vector
    (fa 'grammar (vector
     (state (list
-     (edge 27 1 #f)) #f)
+     (edge 28 1 #f)) #f)
     (state (list
      (edge 1 1 #f)) #t)) 'leftArrow)
    (fa 'definition (vector
     (state (list
-     (edge 8 1 #f)) #f)
+     (edge 9 1 #f)) #f)
     (state (list
-     (edge 17 2 #f)
      (edge 18 2 #f)
-     (edge 19 2 #f)) #f)
+     (edge 19 2 #f)
+     (edge 20 2 #f)) #f)
     (state (list
      (edge 2 3 #f)) #f)
     (state (list
-     (edge 27 4 #f)) #f)
+     (edge 28 4 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'alternation (vector
     (state (list
      (edge 3 1 #f)) #f)
     (state (list
-     (edge 20 2 #f)) #t)
+     (edge 21 2 #f)) #t)
     (state (list
      (edge 3 1 #f)) #f)) 'leftArrow)
    (fa 'sequence (vector
@@ -47,140 +47,151 @@
     (state (list
      (edge 5 0 #f)
      (edge 6 0 #f)
-     (edge 8 1 #f)
-     (edge 21 3 #f)
+     (edge 9 1 #f)
      (edge 7 2 #f)
-     (edge 9 2 #f)
+     (edge 22 3 #f)
+     (edge 8 2 #f)
      (edge 10 2 #f)
-     (edge 12 2 #f)
-     (edge 16 2 #f)) #f)
+     (edge 11 2 #f)
+     (edge 13 2 #f)
+     (edge 17 2 #f)) #f)
     (state (list
-     (edge 28 2 #f)) #f)
+     (edge 29 2 #f)) #f)
     (state (list) #t)
     (state (list
      (edge 2 4 #f)) #f)
     (state (list
-     (edge 22 2 #f)) #f)) 'leftArrow)
+     (edge 23 2 #f)) #f)) 'leftArrow)
    (fa 'prefix (vector
     (state (list
      (edge (list #\! #\& (cons #\* #\+) #\: #\?) 1 #f)) #f)
     (state (list
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'label (vector
     (state (list
-     (edge 8 1 #f)) #f)
+     (edge 9 1 #f)) #f)
     (state (list
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list
      (edge #\= 3 #t)) #f)
     (state (list
-     (edge 27 4 #f)) #f)
+     (edge 28 4 #f)) #f)
+    (state (list) #t)) 'leftArrow)
+   (fa 'preParsedNonTerminal (vector
+    (state (list
+     (edge #\< 1 #t)) #f)
+    (state (list
+     (edge 9 2 #f)) #f)
+    (state (list
+     (edge #\> 3 #t)) #f)
+    (state (list
+     (edge 28 4 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'action (vector
     (state (list
      (edge #\@ 1 #t)) #f)
     (state (list
-     (edge 8 2 #f)) #f)
+     (edge 9 2 #f)) #f)
     (state (list
      (edge #\< 3 #t)
-     (edge 27 8 #f)) #f)
+     (edge 28 8 #f)) #f)
     (state (list
-     (edge 27 4 #f)) #f)
+     (edge 28 4 #f)) #f)
     (state (list
-     (edge 8 5 #f)) #f)
+     (edge 9 5 #f)) #f)
     (state (list
-     (edge 23 6 #f)
+     (edge 24 6 #f)
      (edge #\> 7 #t)) #f)
     (state (list
-     (edge 8 5 #f)) #f)
+     (edge 9 5 #f)) #f)
     (state (list
-     (edge 27 8 #f)) #f)
+     (edge 28 8 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'identifier (vector
     (state (list
      (edge (list (cons #\A #\Z) #\_ (cons #\a #\z)) 1 #f)) #f)
     (state (list
      (edge (list #\- (cons #\0 #\9) (cons #\A #\Z) #\_ (cons #\a #\z)) 1 #f)
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'literal (vector
     (state (list
      (edge (list #\') 1 #t)) #f)
     (state (list
-     (edge 30 2 #f)) #f)
+     (edge 31 2 #f)) #f)
     (state (list
-     (edge 11 3 #f)
-     (edge 15 3 #f)) #f)
+     (edge 12 3 #f)
+     (edge 16 3 #f)) #f)
     (state (list
-     (edge 29 4 #f)
+     (edge 30 4 #f)
      (edge (list #\') 5 #t)) #f)
     (state (list
-     (edge 11 3 #f)
-     (edge 15 3 #f)) #f)
+     (edge 12 3 #f)
+     (edge 16 3 #f)) #f)
     (state (list
-     (edge 27 6 #f)) #f)
+     (edge 28 6 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'caseLiteral (vector
     (state (list
      (edge (list #\") 1 #t)) #f)
     (state (list
-     (edge 32 2 #f)) #f)
+     (edge 33 2 #f)) #f)
     (state (list
-     (edge 11 3 #f)
-     (edge 15 3 #f)) #f)
+     (edge 12 3 #f)
+     (edge 16 3 #f)) #f)
     (state (list
-     (edge 31 4 #f)
+     (edge 32 4 #f)
      (edge (list #\") 5 #t)) #f)
     (state (list
-     (edge 11 3 #f)
-     (edge 15 3 #f)) #f)
+     (edge 12 3 #f)
+     (edge 16 3 #f)) #f)
     (state (list
-     (edge 27 6 #f)) #f)
+     (edge 28 6 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'lChar (vector
     (state (list
      (edge #\\ 1 #f)
-     (edge 34 3 #f)) #f)
+     (edge 35 3 #f)) #f)
     (state (list
      (edge (list #\" #\' #\\ #\n #\r #\t) 2 #f)) #f)
     (state (list) #t)
     (state (list
-     (edge 33 4 #f)) #f)
+     (edge 34 4 #f)) #f)
     (state (list
      (edge 'wild 2 #f)) #f)) 'leftArrow)
    (fa 'charClass (vector
     (state (list
      (edge #\[ 1 #t)) #f)
     (state (list
-     (edge 35 2 #f)
+     (edge 36 2 #f)
      (edge #\] 3 #t)) #f)
     (state (list
-     (edge 13 1 #f)) #f)
+     (edge 14 1 #f)) #f)
     (state (list
-     (edge 27 4 #f)) #f)
+     (edge 28 4 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'range (vector
     (state (list
-     (edge 14 1 #f)
-     (edge 15 1 #f)) #f)
+     (edge 15 1 #f)
+     (edge 16 1 #f)) #f)
     (state (list
      (edge #\- 2 #t)) #t)
     (state (list
-     (edge 14 3 #f)
-     (edge 15 3 #f)) #f)
+     (edge 15 3 #f)
+     (edge 16 3 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'char (vector
     (state (list
      (edge #\\ 1 #f)
-     (edge 38 3 #f)) #f)
+     (edge 39 3 #f)) #f)
     (state (list
      (edge (list #\- (cons #\\ #\]) #\n #\r #\t) 2 #f)) #f)
     (state (list) #t)
     (state (list
-     (edge 37 4 #f)) #f)
+     (edge 38 4 #f)) #f)
     (state (list
-     (edge 36 5 #f)) #f)
+     (edge 37 5 #f)) #f)
     (state (list
      (edge 'wild 2 #f)) #f)) 'leftArrow)
    (fa 'hex (vector
@@ -214,7 +225,7 @@
     (state (list
      (edge #\. 1 #t)) #f)
     (state (list
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'leftArrow (vector
     (state (list
@@ -222,7 +233,7 @@
     (state (list
      (edge #\- 2 #t)) #f)
     (state (list
-     (edge 27 3 #f)) #f)
+     (edge 28 3 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'pruneArrow (vector
     (state (list
@@ -230,7 +241,7 @@
     (state (list
      (edge #\= 2 #t)) #f)
     (state (list
-     (edge 27 3 #f)) #f)
+     (edge 28 3 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'voidArrow (vector
     (state (list
@@ -238,39 +249,39 @@
     (state (list
      (edge #\: 2 #t)) #f)
     (state (list
-     (edge 27 3 #f)) #f)
+     (edge 28 3 #f)) #f)
     (state (list) #t)) 'leftArrow)
    (fa 'alt (vector
     (state (list
      (edge #\| 1 #f)) #f)
     (state (list
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa 'open (vector
     (state (list
      (edge #\( 1 #f)) #f)
     (state (list
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa 'close (vector
     (state (list
      (edge #\) 1 #f)) #f)
     (state (list
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa 'comma (vector
     (state (list
      (edge #\, 1 #f)) #f)
     (state (list
-     (edge 27 2 #f)) #f)
+     (edge 28 2 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa 'sComment (vector
     (state (list
      (edge #\# 1 #f)) #f)
     (state (list
-     (edge 40 2 #f)
-     (edge 26 3 #f)
-     (edge 39 3 #f)) #f)
+     (edge 41 2 #f)
+     (edge 27 3 #f)
+     (edge 40 3 #f)) #f)
     (state (list
      (edge 'wild 1 #f)) #f)
     (state (list) #t)) 'voidArrow)
@@ -280,8 +291,8 @@
     (state (list
      (edge #\* 2 #f)) #f)
     (state (list
-     (edge 25 2 #f)
-     (edge 41 3 #f)
+     (edge 26 2 #f)
+     (edge 42 3 #f)
      (edge #\* 4 #f)) #f)
     (state (list
      (edge 'wild 2 #f)) #f)
@@ -299,14 +310,14 @@
    (fa 'ws (vector
     (state (list
      (edge (list #\tab #\space) 0 #f)
-     (edge 26 0 #f)
-     (edge 24 0 #f)
-     (edge 25 0 #f)) #t)) 'voidArrow)
+     (edge 27 0 #f)
+     (edge 25 0 #f)
+     (edge 26 0 #f)) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
-     (edge 17 1 #f)
      (edge 18 1 #f)
-     (edge 19 1 #f)) #f)
+     (edge 19 1 #f)
+     (edge 20 1 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
@@ -326,7 +337,7 @@
     (state (list) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
-     (edge 26 1 #f)) #f)
+     (edge 27 1 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
@@ -338,7 +349,7 @@
     (state (list) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
-     (edge 26 1 #f)) #f)
+     (edge 27 1 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
@@ -354,7 +365,7 @@
     (state (list) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
-     (edge 26 1 #f)) #f)
+     (edge 27 1 #f)) #f)
     (state (list) #t)) 'voidArrow)
    (fa '! (vector
     (state (list
@@ -363,4 +374,5 @@
      (edge #\/ 2 #f)) #f)
     (state (list) #t)) 'voidArrow)))
 
-(define grammar-parser (make-parser 0 #t automata))
+(define grammar-parser (make-parser 0 #t automata))
+

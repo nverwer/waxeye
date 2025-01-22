@@ -9,7 +9,18 @@
          waxeye/fa
          waxeye/set
          "debug.rkt" "gen.rkt" "nfa.rkt" "set.rkt")
-(provide make-automata)
+(provide make-automata display-dfa)
+
+
+(define (display-dfa dfa)
+  (display "DFA: ")
+  (display (car dfa))
+  (newline)
+  (display (caddr dfa))
+  (newline)
+  (display-states (cadr dfa))
+  (newline)
+)
 
 
 (define (make-automata grammar)
@@ -181,13 +192,13 @@
   (for-each (lambda (a)
               (display "(")
               (for-each (lambda (b)
-                          (display "(")
+                          (display "(cost:")
                           (print (edge-t b))
-                          (display " ")
+                          (display " transition-to:")
                           (print (edge-s b))
-                          (display " ")
+                          (display " include:")
                           (print (edge-v b))
                           (display ") "))
                         (state-edges a))
-              (displayln (string-append ") " (state-match a))))
+              (displayln (string-append ") " (if (state-match a) "match" "no match"))))
             state-vector))
