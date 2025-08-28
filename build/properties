@@ -2,8 +2,8 @@
 # Compilation settings
 build.debug = true
 build.deprecation = true
-build.jdk-version.source = 1.8
-build.jdk-version.target = 1.8
+build.jdk-version.source = 11
+build.jdk-version.target = 11
 build.optimize = true
 
 # Classpath

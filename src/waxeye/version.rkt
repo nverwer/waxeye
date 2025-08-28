@@ -6,4 +6,4 @@
 #lang racket/base
 (provide *version*)
 
-(define *version* "0.8.1")
+(define *version* "1.0.0NV")
