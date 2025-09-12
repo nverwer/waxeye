@@ -11,7 +11,7 @@ package org.waxeye.ast;
  *
  * @author Nico Verwer
  */
-public interface IPreParsedNonTerminal
+public interface IPreParsedNonTerminal<ExtendedData>
 {
   /**
    * Gets the pre-parsed non-terminal name.
@@ -19,5 +19,12 @@ public interface IPreParsedNonTerminal
    * @return The pre-parsed non-terminal name.
    */
   String getName();
+
+  /**
+   * Gets the extended data associated with this pre-parsed non-terminal.
+   *
+   * @return The extended data associated with this pre-parsed non-terminal.
+   */
+  ExtendedData getExtendedData();
 
 }

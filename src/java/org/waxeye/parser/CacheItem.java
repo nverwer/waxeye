@@ -15,13 +15,16 @@ import org.waxeye.ast.IAST;
  *
  * @author Orlando Hill
  */
-final class CacheItem <E extends Enum<?>>
+final class CacheItem <E extends Enum<?>, ExtendedData>
 {
     /** The resulting parse tree. */
     private final IAST<E> result;
 
     /** The position on the input string. */
     private final int position;
+
+    /** The extended data associated with the input. */
+    private final ExtendedData extendedData;
 
     /** The line number. */
     private final int line;
@@ -45,11 +48,12 @@ final class CacheItem <E extends Enum<?>>
      *
      * @param lastCR Whether the last character was a carriage return.
      */
-    CacheItem(final IAST<E> result, final int position,
+    CacheItem(final IAST<E> result, final int position, ExtendedData extendedData,
         final int line, final int column, final boolean lastCR)
     {
         this.result = result;
         this.position = position;
+        this.extendedData = extendedData;
         this.line = line;
         this.column = column;
         this.lastCR = lastCR;
@@ -78,6 +82,16 @@ final class CacheItem <E extends Enum<?>>
     public int getPosition()
     {
         return position;
+    }
+
+    /**
+     * Returns the extended data.
+     *
+     * @return Returns the extended data.
+     */
+    public ExtendedData getExtendedData()
+    {
+        return extendedData;
     }
 
     /**

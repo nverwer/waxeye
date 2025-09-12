@@ -39,5 +39,5 @@ public interface IASTVisitor
      *
      * @param tree The tree to visit.
      */
-    void visitPreParsedNonTerminal(IPreParsedNonTerminal tree);
+    void visitPreParsedNonTerminal(IPreParsedNonTerminal<?> tree);
 }

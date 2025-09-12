@@ -6,6 +6,8 @@
  */
 package org.waxeye.parser;
 
+import java.util.function.BiFunction;
+
 import org.waxeye.input.IParserInput;
 
 /**
@@ -41,8 +43,19 @@ public interface IParser <E extends Enum<?>>
      * @param input The input to parse.
      *
      * @return A ParseResult with either an AST or an error.
-     *
-     * This method is deprecated in the 'official' waxeye, but we need it for setting positions in the input.
      */
-    ParseResult<E> parse(IParserInput input);
+    <ExtendedData> ParseResult<E> parse(IParserInput<ExtendedData> input);
+
+    /**
+     * Parses the input, recognizing pre-parsed non-terminals.
+     *
+     * @param input The input to parse.
+     * @param preparsedNonTerminalAt A function that, given the name of a pre-parsed non-terminal and a position in the input,
+     *   returns the length of the pre-parsed non-terminal at that position, or null if there is none.
+     *
+     * @return A ParseResult with either an AST or an error.
+     */
+    <ExtendedData>
+    ParseResult<E> parse(IParserInput<ExtendedData> input, BiFunction<String, IParserInput<ExtendedData>, Integer> preparsedNonTerminalAt);
+
 }

@@ -8,10 +8,12 @@ package org.waxeye.input;
 
 /**
  * An interface for parser input.
+ * This is a version that supports extended data, which is useful for pre-parsed non-terminals.
  *
  * @author Orlando Hill
+ * @author Nico Verwer
  */
-public interface IParserInput
+public interface IParserInput<ExtendedData>
 {
     /** The end of the file marker. */
     int EOF = -1;
@@ -45,4 +47,19 @@ public interface IParserInput
      * @param position The position to set.
      */
     void setPosition(int position);
+
+    /**
+     * Gets the extended data associated with the input.
+     *
+     * @return The extended data associated with the input.
+     */
+    ExtendedData getExtendedData();
+
+    /**
+     * Sets the extended data associated with the input.
+     * This should always be done together with a call to setPosition().
+     *
+     * @param data The extended data to associate with the input.
+     */
+    void setExtendedData(ExtendedData data);
 }

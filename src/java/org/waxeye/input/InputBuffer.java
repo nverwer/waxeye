@@ -11,7 +11,7 @@ package org.waxeye.input;
  *
  * @author Orlando Hill
  */
-public final class InputBuffer implements IParserInput
+public final class InputBuffer implements IParserInput<Void>
 {
     /** The internal buffer. */
     private final char[] input;
@@ -51,6 +51,7 @@ public final class InputBuffer implements IParserInput
     }
 
     /** {@inheritDoc} */
+    @Override
     public int consume()
     {
         if (position < inputSize)
@@ -62,6 +63,7 @@ public final class InputBuffer implements IParserInput
     }
 
     /** {@inheritDoc} */
+    @Override
     public int peek()
     {
         if (position < inputSize)
@@ -73,6 +75,7 @@ public final class InputBuffer implements IParserInput
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPosition()
     {
         return position;
@@ -94,6 +97,7 @@ public final class InputBuffer implements IParserInput
      *
      * @param position The position to set.
      */
+    @Override
     public void setPosition(final int position)
     {
         if (position < 0)
@@ -107,6 +111,7 @@ public final class InputBuffer implements IParserInput
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(final Object object)
     {
         if (this == object)
@@ -130,6 +135,7 @@ public final class InputBuffer implements IParserInput
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode()
     {
         final int start = 17;
@@ -147,5 +153,16 @@ public final class InputBuffer implements IParserInput
         result = mult * result + position;
 
         return Math.abs(result);
+    }
+
+    @Override
+    public Void getExtendedData()
+    {
+      return null;
+    }
+
+    @Override
+    public void setExtendedData(Void data)
+    {
     }
 }

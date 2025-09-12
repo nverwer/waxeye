@@ -54,15 +54,6 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
     /** The starting automaton. */
     private final int start;
 
-    /** The function that tests for pre-parsed non-terminals.
-     * Function to decide if a non-terminal is present at an input position.
-     * The first parameter is the name of a pre-parsed non-terminal, as specified by the grammar.
-     * The second parameter is the current position in the input.
-     * The function returns the number of character positions within the pre-parsed non-terminal,
-     * or -1 if there is no pre-parsed non-terminal with the given name at the given position.
-     */
-    private BiFunction<String, Integer, Integer> preparsedNonTerminalAt;
-
     /**
      * Creates a new Parser.
      *
@@ -87,7 +78,6 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         this.preParsedNonTerminalType = preParsedNonTerminalType;
         this.posType = posType;
         this.negType = negType;
-        this.preparsedNonTerminalAt = null;
     }
 
     /** Returns whether the parser checks that all input is consumed. */
@@ -95,49 +85,60 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
       this.eofCheck = eofCheck;
     }
 
-    /** Set the function that tests for pre-parsed non-terminals. */
-    public void setPreparsedNonTerminalAt(BiFunction<String, Integer, Integer> preparsedNonTerminalAt)
-    {
-      this.preparsedNonTerminalAt = preparsedNonTerminalAt;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final ParseResult<E> parse(final char[] input)
     {
-        return new InnerParser(input).parse();
+        return new InnerParser<Void>(new InputBuffer(input), null).parse();
     }
 
     /** {@inheritDoc} */
     @Override
     public final ParseResult<E> parse(final String input)
     {
-        return new InnerParser(input.toCharArray()).parse();
+        return new InnerParser<Void>(new InputBuffer(input.toCharArray()), null).parse();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final ParseResult<E> parse(final IParserInput input)
+    public final <ExtendedData>
+                 ParseResult<E> parse(final IParserInput<ExtendedData> input)
     {
-        return new InnerParser(input).parse();
+        return new InnerParser<ExtendedData>(input, null).parse();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <ExtendedData>
+                 ParseResult<E> parse(final IParserInput<ExtendedData> input, BiFunction<String, IParserInput<ExtendedData>, Integer> preparsedNonTerminalAt)
+    {
+        return new InnerParser<ExtendedData>(input, preparsedNonTerminalAt).parse();
     }
 
     /**
-     * A hidden inner class so that we can visit the transition costs without
-     * exposing things to the API user.
+     * A hidden inner class so that we can visit the transition costs without exposing things to the API user.
      *
      * @author Orlando Hill
      */
-    private final class InnerParser implements ITransitionVisitor<E>
+    private final class InnerParser<ExtendedData> implements ITransitionVisitor<E>
     {
         /** The input to parse. */
-        private final IParserInput input;
+        private final IParserInput<ExtendedData> input;
+
+        /** The function that tests for pre-parsed non-terminals.
+         * Function to decide if a non-terminal is present at an input position.
+         * The first parameter is the name of a pre-parsed non-terminal, as specified by the grammar.
+         * The second parameter is the current input, which holds its own position.
+         * The function returns the number of character positions within the pre-parsed non-terminal,
+         * or -1 if there is no pre-parsed non-terminal with the given name at the given position.
+         */
+        private BiFunction<String, IParserInput<ExtendedData>, Integer> preparsedNonTerminalAt;
 
         /** The automata stack. */
         private final Stack<FA<E>> faStack;
 
         /** The result cache. */
-        private final HashMap<CacheKey, CacheItem<E>> cache;
+        private final HashMap<CacheKey, CacheItem<E, ExtendedData>> cache;
 
         /** The line number. */
         private int line;
@@ -165,21 +166,12 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
          *
          * @param input The input to parse.
          */
-        InnerParser(final char[] input)
-        {
-            this(new InputBuffer(input));
-        }
-
-        /**
-         * Creates a new Parser.
-         *
-         * @param input The input to parse.
-         */
-        InnerParser(final IParserInput input)
+        InnerParser(final IParserInput<ExtendedData> input, final BiFunction<String, IParserInput<ExtendedData>, Integer> preparsedNonTerminalAt)
         {
             this.input = input;
+            this.preparsedNonTerminalAt = preparsedNonTerminalAt;
             this.faStack = new Stack<FA<E>>();
-            this.cache = new HashMap<CacheKey, CacheItem<E>>();
+            this.cache = new HashMap<CacheKey, CacheItem<E, ExtendedData>>();
             this.line = 1;
             this.column = 0;
             this.lastCR = false;
@@ -229,10 +221,10 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
          *
          * @param cr Whether the last character was a CR.
          */
-        private void restorePos(final int pos, final int line, final int col,
-            final boolean cr)
+        private void restorePos(final int pos, final ExtendedData extendedData, final int line, final int col, final boolean cr)
         {
             this.input.setPosition(pos);
+            this.input.setExtendedData(extendedData);
             this.line = line;
             this.column = col;
             this.lastCR = cr;
@@ -248,13 +240,13 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         private IAST<E> matchAutomaton(final int index)
         {
             final int startPos = input.getPosition();
+            final ExtendedData extendedData = input.getExtendedData();
             final CacheKey key = new CacheKey(index, startPos);
-            final CacheItem<E> cachedItem = cache.get(key);
+            final CacheItem<E, ExtendedData> cachedItem = cache.get(key);
 
             if (cachedItem != null)
             {
-                restorePos(cachedItem.getPosition(), cachedItem.getLine(),
-                    cachedItem.getColumn(), cachedItem.getLastCR());
+                restorePos(cachedItem.getPosition(), cachedItem.getExtendedData(), cachedItem.getLine(), cachedItem.getColumn(), cachedItem.getLastCR());
                 return cachedItem.getResult();
             }
 
@@ -264,7 +256,6 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
             final FA<E> automaton = automata.get(index);
             final E type = automaton.getType();
             final int mode = automaton.getMode();
-
             faStack.push(automaton);
             final List<IAST<E>> res = matchState(0);
             faStack.pop();
@@ -273,7 +264,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
 
             if (type.equals(posType))
             {
-                restorePos(startPos, startLine, startCol, startCR);
+                restorePos(startPos, extendedData, startLine, startCol, startCR);
 
                 if (res == null)
                 {
@@ -288,7 +279,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
             {
                 if (type.equals(negType))
                 {
-                    restorePos(startPos, startLine, startCol, startCR);
+                    restorePos(startPos, extendedData, startLine, startCol, startCR);
 
                     if (res == null)
                     {
@@ -348,8 +339,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
                 }
             }
 
-            cache.put(key, new CacheItem<E>(value, input.getPosition(), line,
-                column, lastCR));
+            cache.put(key, new CacheItem<E, ExtendedData>(value, input.getPosition(), input.getExtendedData(), line, column, lastCR));
 
             return value;
         }
@@ -423,6 +413,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         private List<IAST<E>> matchEdge(final Edge<E> edge)
         {
             final int startPos = input.getPosition();
+            final ExtendedData extendedData = input.getExtendedData();
             final int startLine = line;
             final int startCol = column;
             final boolean startCR = lastCR;
@@ -438,7 +429,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
 
                 if (transRes == null)
                 {
-                    restorePos(startPos, startLine, startCol, startCR);
+                    restorePos(startPos, extendedData, startLine, startCol, startCR);
                     return null;
                 }
                 else
@@ -526,7 +517,6 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
                     return new Char<E>(c, charType, input.getPosition());
                 }
             }
-
             updateError();
             return null;
         }
@@ -551,16 +541,19 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         public IAST<E> visitPreParsedNonTerminalTransition(PreParsedNonTerminalTransition<E> t)
         {
           int startPos = input.getPosition();
-          int skipChars = (preparsedNonTerminalAt == null) ? -1 : preparsedNonTerminalAt.apply(t.getName(), startPos);
-          if (skipChars >= 0) {
+          int skipChars = (preparsedNonTerminalAt == null) ? -1 : preparsedNonTerminalAt.apply(t.getName(), input);
+          if (skipChars >= 0)
+          {
             int endPos = startPos + skipChars;
+            // Get the corresponding SmaxElement for the pre-parsed non-terminal, before the input position is changed, which may reset the extended data.
+            ExtendedData correspondingSmaxElement = input.getExtendedData();
             // Skip past the characters that have been recognized earlier, as a pre-parsed non-terminal.
             input.setPosition(endPos);
             // Return an instance of the pre-parsed non-terminal.
-            return new PreParsedNonTerminal<E>(preParsedNonTerminalType, t.getName(), new Position(startPos, endPos));
-          } else {
-            return null;
+            return new PreParsedNonTerminal<E, ExtendedData>(preParsedNonTerminalType, t.getName(), new Position(startPos, endPos), correspondingSmaxElement);
           }
+          updateError();
+          return null;
         }
     }
 }

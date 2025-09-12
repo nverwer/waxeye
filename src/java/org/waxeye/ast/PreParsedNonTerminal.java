@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author Nico Verwer
  */
-public class PreParsedNonTerminal <E extends Enum<?>> implements IAST<E>, IPreParsedNonTerminal
+public class PreParsedNonTerminal <E extends Enum<?>, ExtendedData> implements IAST<E>, IPreParsedNonTerminal<ExtendedData>
 {
   /** The type of AST node. */
   private final E type;
@@ -27,6 +27,9 @@ public class PreParsedNonTerminal <E extends Enum<?>> implements IAST<E>, IPrePa
   /** The position of the AST. */
   private Position position;
 
+  /** The extended data associated with the pre-parsed non-terminal. */
+  private ExtendedData extendedData;
+
 
   /**
    * Creates a new PreParsedNonTerminal AST.
@@ -35,11 +38,12 @@ public class PreParsedNonTerminal <E extends Enum<?>> implements IAST<E>, IPrePa
    * @param name The name of the pre-parsed non-terminal.
    * @param position The position of the AST.
    */
-  public PreParsedNonTerminal(E type, String name, Position position)
+  public PreParsedNonTerminal(E type, String name, Position position, ExtendedData extendedData)
   {
     this.type = type;
     this.name = name;
     this.position = position;
+    this.extendedData = extendedData;
 
     assert invariants();
   }
@@ -93,6 +97,12 @@ public class PreParsedNonTerminal <E extends Enum<?>> implements IAST<E>, IPrePa
   public String getName()
   {
     return name;
+  }
+
+  @Override
+  public ExtendedData getExtendedData()
+  {
+    return extendedData;
   }
 
 }
