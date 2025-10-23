@@ -51,6 +51,9 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
     /** Whether to check that all input gets parsed. */
     private boolean eofCheck;
 
+    /** Debugging flag. */
+    private boolean debug = false;
+
     /** The starting automaton. */
     private final int start;
 
@@ -80,9 +83,14 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         this.negType = negType;
     }
 
-    /** Returns whether the parser checks that all input is consumed. */
+    /** Set whether the parser checks that all input is consumed. */
     public void setEofCheck(boolean eofCheck) {
       this.eofCheck = eofCheck;
+    }
+
+    /** Set whether debugging is enabled. */
+    public void setDebug(boolean debug) {
+      this.debug = debug;
     }
 
     /** {@inheritDoc} */
@@ -160,6 +168,9 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
 
         /** The nt deepest error. */
         private String errorNT;
+
+        /** For debugging, keep the depth of the parser. */
+        private int parseDepth = 0;
 
         /**
          * Creates a new Parser.
@@ -256,6 +267,9 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
             final FA<E> automaton = automata.get(index);
             final E type = automaton.getType();
             final int mode = automaton.getMode();
+
+            if (debug) System.out.println("  ".repeat(parseDepth++) + "[" + line+"/"+column + "] try " + type.name() + " at pos " + startPos);
+
             faStack.push(automaton);
             final List<IAST<E>> res = matchState(0);
             faStack.pop();
@@ -341,6 +355,8 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
 
             cache.put(key, new CacheItem<E, ExtendedData>(value, input.getPosition(), input.getExtendedData(), line, column, lastCR));
 
+            if (debug) System.out.println("  ".repeat(--parseDepth) + "[" + line+"/"+column + "] " + type.name() + " result: " + (value == null ? "null" : value.getType().name()) + " at pos " + startPos + " to " + input.getPosition());
+
             return value;
         }
 
@@ -386,7 +402,10 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         {
             if (index < edges.size())
             {
+                String typeName = faStack.peek().getType().name();
+                if (debug) System.out.println("  ".repeat(parseDepth++) + "[" + line+"/"+column + "]" + " try edge " + (index+1) + " of " + edges.size() + " for " + typeName);
                 final List<IAST<E>> res = matchEdge(edges.get(index));
+                if (debug) System.out.println("  ".repeat(--parseDepth) + "[" + line+"/"+column + "]" + " edge " + (index+1) + " of " + edges.size() + " for " + typeName + " : " + (res == null ? "null" : res.size() + " nodes"));
 
                 if (res == null)
                 {
@@ -499,6 +518,7 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         @Override
         public IAST<E> visitAutomatonTransition(final AutomatonTransition<E> t)
         {
+            if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " automaton: " + automata.get(t.getIndex()).getType().name());
             return matchAutomaton(t.getIndex());
         }
 
@@ -510,15 +530,27 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
             {
                 final char c = (char) input.peek();
 
+                final String displayChar = (c == '\n') ? "\\n" : (c == '\r') ? "\\r" : (c == '\t') ? "\\t" : Character.toString(c);
                 if (t.withinSet(c))
                 {
+                    if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " char match: '" + displayChar + "'");
                     input.consume();
                     updateLineCol(c);
                     return new Char<E>(c, charType, input.getPosition());
                 }
+                else
+                {
+                    if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " no char match: '" + displayChar + "'");
+                    updateError();
+                    return null;
+                }
             }
-            updateError();
-            return null;
+            else
+            {
+                if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " no char match: end of input");
+                updateError();
+                return null;
+            }
         }
 
         /** {@inheritDoc} */
@@ -527,11 +559,13 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         {
             if (input.peek() == IParserInput.EOF)
             {
+                if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + ". no match: end of input");
                 updateError();
                 return null;
             }
 
             final char c = (char) input.consume();
+            if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + ". match: '" + c + "'");
             updateLineCol(c);
             return new Char<E>(c, charType, input.getPosition());
         }
@@ -544,14 +578,16 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
           int skipChars = (preparsedNonTerminalAt == null) ? -1 : preparsedNonTerminalAt.apply(t.getName(), input);
           if (skipChars >= 0)
           {
-            int endPos = startPos + skipChars;
-            // Get the corresponding SmaxElement for the pre-parsed non-terminal, before the input position is changed, which may reset the extended data.
-            ExtendedData correspondingSmaxElement = input.getExtendedData();
-            // Skip past the characters that have been recognized earlier, as a pre-parsed non-terminal.
-            input.setPosition(endPos);
-            // Return an instance of the pre-parsed non-terminal.
-            return new PreParsedNonTerminal<E, ExtendedData>(preParsedNonTerminalType, t.getName(), new Position(startPos, endPos), correspondingSmaxElement);
+              int endPos = startPos + skipChars;
+              // Get the corresponding SmaxElement for the pre-parsed non-terminal, before the input position is changed, which may reset the extended data.
+              ExtendedData correspondingSmaxElement = input.getExtendedData();
+              // Skip past the characters that have been recognized earlier, as a pre-parsed non-terminal.
+              input.setPosition(endPos);
+              // Return an instance of the pre-parsed non-terminal.
+              if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " match: <" + t.getName() + ">");
+              return new PreParsedNonTerminal<E, ExtendedData>(preParsedNonTerminalType, t.getName(), new Position(startPos, endPos), correspondingSmaxElement);
           }
+          if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " no match: <" + t.getName() + ">");
           updateError();
           return null;
         }
