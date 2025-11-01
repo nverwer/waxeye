@@ -258,7 +258,9 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
             if (cachedItem != null)
             {
                 restorePos(cachedItem.getPosition(), cachedItem.getExtendedData(), cachedItem.getLine(), cachedItem.getColumn(), cachedItem.getLastCR());
-                return cachedItem.getResult();
+                IAST<E> value = cachedItem.getResult();
+                if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "] " + automata.get(index).getType().name() + " cached result: " + (value == null ? "null" : value.getType().name()));
+                return value;
             }
 
             final int startLine = line;
@@ -518,7 +520,10 @@ public abstract class Parser <E extends Enum<?>> implements IParser<E>
         @Override
         public IAST<E> visitAutomatonTransition(final AutomatonTransition<E> t)
         {
-            if (debug) System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " automaton: " + automata.get(t.getIndex()).getType().name());
+            if (debug) {
+              String automatonName = automata.get(t.getIndex()).getType().name();
+              System.out.println("  ".repeat(parseDepth) + "[" + line+"/"+column + "]" + " automaton: " + automatonName);
+            }
             return matchAutomaton(t.getIndex());
         }
 
