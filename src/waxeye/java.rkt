@@ -50,23 +50,29 @@
 
 (define (java-type grammar)
   (let ((non-terms (get-non-terms grammar)))
-    (format "~a~a\n~apublic enum ~a\n{\n~a}\n"
+    (format "~a~a\n~apublic enum ~a implements org.waxeye.ast.Labeled\n{\n~a}\n"
             (java-header-comment)
             (gen-java-package)
             (java-doc "The types of AST nodes." "" "@author Waxeye Parser Generator")
             *java-node-name*
             (indent (string-append
-                     (ind) "_Empty,\n"
-                     (ind) "_Char,\n"
-                     (ind) "_PreParsedNonTerminal,\n"
-                     (ind) "_Pos,\n"
-                     (ind) "_Neg"
+                     (ind) "_Empty(\"_Empty\"),\n"
+                     (ind) "_Char(\"_Char\"),\n"
+                     (ind) "_PreParsedNonTerminal(\"_PreParsedNonTerminal\"),\n"
+                     (ind) "_Pos(\"_Pos\"),\n"
+                     (ind) "_Neg(\"_Neg\")"
                      (apply string-append (map (lambda (a)
-                                           (format ",\n~a~a"
+                                           (format ",\n~a~a(\"~a\")"
                                                    (ind)
-                                                   (camel-case-upper a)))
+                                                   (camel-case-upper a)
+                                                   a))
                                          non-terms))
-                     "\n")))))
+                     ";\n"
+                     (ind) "private final String label;\n"
+                     (ind) (string-append "private " *java-node-name* "(String label) { this.label = label; }\n")
+                     (ind) "public String getLabel() { return this.label; }\n"
+                    ))
+    )))
 
 
 (define (java-parser grammar)

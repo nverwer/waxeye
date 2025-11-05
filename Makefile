@@ -2,7 +2,7 @@
 SHELL=bash
 
 # Waxeye version
-VERSION=1.0.0NV
+VERSION=1.1.0NV
 
 # Default task: Show help
 .PHONY: help
