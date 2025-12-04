@@ -43,7 +43,7 @@ implements IChar
     {
         return value;
     }
-
+    
     /** {@inheritDoc} */
     public int getPos()
     {
