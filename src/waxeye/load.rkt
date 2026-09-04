@@ -36,7 +36,7 @@
               (begin
                 (hash-set! *load-cache* path grammar-tree)
                 grammar-tree)
-              (error 'waxeye (string-append "syntax error in grammar " path "\n" (parse-error->string grammar-tree))))))))
+              (error 'waxeye (string-append "syntax error in grammar " (path->string path) "\n" (parse-error->string grammar-tree))))))))
 
 
 (define (load-modular-grammar path)
@@ -60,6 +60,7 @@
                                     (build-path base-path m)))))
    ((list? m)
     (apply (case (car m)
+             ((include) resolve-include)
              ((rename) resolve-rename)
              ((only) resolve-only)
              ((all-except) resolve-all-except)
@@ -132,6 +133,15 @@
                 (hash-set! t (car a) (cdr a)))
               names)
     (map rename nts)))
+
+
+(define (resolve-include base-path path)
+  (ast-c (load-modular-grammar
+          (if (or (absolute-path? path)
+                  (equal? base-path 'relative)
+                  (not base-path))
+              path
+              (build-path base-path path)))))
 
 
 (define (resolve-only base-path exp . non-terms)

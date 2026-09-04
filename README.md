@@ -4,6 +4,13 @@ Waxeye Parser Generator [![Build Status][badge-travis]][travis]
 Waxeye is a parser generator based on parsing expression grammars (PEGs). It
 supports C, Java, Javascript, Python, Ruby and Scheme.
 
+Notice
+------
+
+This version is maintained for use in the [lx-core](https://gitlab.com/koop/ld/lx/lx-core) project 
+and may not include the latest features or updates from the main Waxeye repository.
+It also includes some new features, which may not be present in the main Waxeye repository.
+
 
 Features
 --------
